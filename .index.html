@@ -1,378 +1,66 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Dual Dallas ESP32</title>
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-        .card {
-            background-color: #1e1e1e;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background-color: #d32f2f;
-            margin-bottom: 1.5rem;
-        }
-        .status-badge.connected { 
-            background-color: #388e3c; 
-        }
-        h2 {
-            margin-top: 0;
-            font-size: 1.4rem;
-            color: #e0e0e0;
-            margin-bottom: 1.5rem;
-        }
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .btn-menu {
-            padding: 18px;
-            font-size: 1.1rem;
-            border-radius: 10px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-            transition: transform 0.1s, opacity 0.2s;
-        }
-        .btn-menu:active {
-            transform: scale(0.98);
-        }
-        .btn-auto {
-            background-color: #0288d1;
-        }
-        .btn-manual {
-            background-color: #f57c00;
-        }
-        .btn-back {
-            background-color: #424242;
-            color: #ddd;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            margin-bottom: 15px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .btn-back:hover {
-            background-color: #555;
-        }
-        .temp-label {
-            font-size: 0.85rem;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .temp-display {
-            font-size: 3.5rem;
-            font-weight: bold;
-            margin: 5px 0 15px 0;
-            color: #4fc3f7;
-        }
-        .sub-sensors {
-            display: flex;
-            justify-content: space-around;
-            background-color: #252525;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-        }
-        .sub-sensors span {
-            font-weight: bold;
-            color: #81d4fa;
-        }
-        .rele-status-box {
-            margin: 15px 0;
-            font-size: 1.05rem;
-            background-color: #252525;
-            padding: 12px;
-            border-radius: 10px;
-        }
-        .rele-indicator {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background-color: #444;
-            display: inline-block;
-            vertical-align: middle;
-            margin-left: 8px;
-            box-shadow: 0 0 5px #000;
-            transition: all 0.3s ease;
-        }
-        .rele-indicator.on {
-            background-color: #00e676;
-            box-shadow: 0 0 15px #00e676;
-        }
-        .section {
-            background-color: #2c2c2c;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-        }
-        .section-title {
-            font-size: 0.95rem;
-            color: #ddd;
-            display: block;
-            margin-bottom: 12px;
-        }
-        .mode-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        button.control-btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            color: white;
-            transition: 0.2s;
-        }
-        button.control-btn:hover {
-            opacity: 0.9;
-        }
-        button.btn-action { 
-            background-color: #00897b; 
-            width: 100%; 
-            margin-top: 12px;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            font-size: 0.95rem;
-            cursor: pointer;
-        }
-        button.btn-action:hover { 
-            background-color: #00695c; 
-        }
-        .inputs-group {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-        }
-        .input-box {
-            flex: 1;
-            text-align: left;
-        }
-        .input-box small {
-            display: block;
-            color: #bbb;
-            margin-bottom: 4px;
-            text-align: center;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #555;
-            background: #1e1e1e;
-            color: white;
-            font-size: 1rem;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .hidden { 
-            display: none; 
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor de Temperatura ESP32 - S7-1200</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+    .cards { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
+    .card { background: #1e293b; padding: 1.5rem 2.2rem; border-radius: 12px; text-align: center; min-width: 170px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .card-prom { border: 2px solid #38bdf8; background: #16243b; }
+    .temp { font-size: 2.8rem; font-weight: bold; color: #94a3b8; margin: 0.5rem 0; }
+    .temp-prom { font-size: 3.2rem; color: #38bdf8; }
+    .badge { padding: 0.6rem 1.4rem; border-radius: 999px; font-weight: bold; margin-top: 1.5rem; }
+    .ok { background: #16a34a; color: white; }
+    .wait { background: #ca8a04; color: white; }
+    .status { font-size: 0.85rem; color: #94a3b8; margin-top: 1rem; }
+  </style>
 </head>
 <body>
-
-<div class="card">
-    <!-- Estado global de conexión -->
-    <div id="connStatus" class="status-badge">Desconectado</div>
-
-    <!-- ========================================== -->
-    <!-- PANTALLA 1: SELECCIÓN DE MODO              -->
-    <!-- ========================================== -->
-    <div id="vistaInicio">
-        <h2>Seleccione Modo de Operación</h2>
-        <div class="menu-buttons">
-            <button class="btn-menu btn-auto" onclick="abrirVista('auto')">
-                Modo Automático
-            </button>
-            <button class="btn-menu btn-manual" onclick="abrirVista('manual')">
-                Modo Manual
-            </button>
-        </div>
+  <h1>Control de Temperatura S7-1200</h1>
+  <div class="cards">
+    <div class="card">
+      <div>Sensor 1</div>
+      <div class="temp" id="t1">--.- °C</div>
     </div>
-
-    <!-- ========================================== -->
-    <!-- PANTALLA 2: MODO AUTOMÁTICO                -->
-    <!-- ========================================== -->
-    <div id="vistaAuto" class="hidden">
-        <div style="text-align: left;">
-            <button class="btn-back" onclick="volverInicio()">← Cambiar Modo</button>
-        </div>
-
-        <div class="temp-label">Temperatura Promedio</div>
-        <div class="temp-display"><span id="tempProm">--</span> °C</div>
-
-        <div class="sub-sensors">
-            <div>Sensor 1: <span id="temp1">--</span> °C</div>
-            <div>Sensor 2: <span id="temp2">--</span> °C</div>
-        </div>
-
-        <div class="rele-status-box">
-            Estado del Relé: <strong class="releTexto" style="color: #aaa;">APAGADO</strong> 
-            <span class="releIndicator rele-indicator"></span>
-        </div>
-
-        <div class="section">
-            <span class="section-title">Rango de Activación (Promedio °C)</span>
-            <div class="inputs-group">
-                <div class="input-box">
-                    <small>Mínima (°C)</small>
-                    <input type="number" id="tempMin" value="20" step="0.5">
-                </div>
-                <div class="input-box">
-                    <small>Máxima (°C)</small>
-                    <input type="number" id="tempMax" value="28" step="0.5">
-                </div>
-            </div>
-            <button class="btn-action" onclick="enviarRango()">Guardar Rango</button>
-        </div>
+    <div class="card card-prom">
+      <div>Promedio (Control)</div>
+      <div class="temp temp-prom" id="prom">--.- °C</div>
     </div>
-
-    <!-- ========================================== -->
-    <!-- PANTALLA 3: MODO MANUAL                    -->
-    <!-- ========================================== -->
-    <div id="vistaManual" class="hidden">
-        <div style="text-align: left;">
-            <button class="btn-back" onclick="volverInicio()">← Cambiar Modo</button>
-        </div>
-
-        <h2>Control Manual</h2>
-
-        <div class="rele-status-box">
-            Estado Actual: <strong class="releTexto" style="color: #aaa;">APAGADO</strong> 
-            <span class="releIndicator rele-indicator"></span>
-        </div>
-
-        <div class="section">
-            <span class="section-title">Accionar Relé</span>
-            <div class="mode-buttons">
-                <button class="control-btn" style="background-color: #2e7d32;" onclick="controlManual(true)">ENCENDER</button>
-                <button class="control-btn" style="background-color: #c62828;" onclick="controlManual(false)">APAGAR</button>
-            </div>
-        </div>
+    <div class="card">
+      <div>Sensor 2</div>
+      <div class="temp" id="t2">--.- °C</div>
     </div>
-</div>
+  </div>
+  <div id="estado" class="badge wait">Esperando datos...</div>
+  <div class="status" id="conn">Conectando al broker...</div>
 
-<script>
-    const topicDatos = "stalindmolina/dallas_esp32/datos";
-    const topicControl = "stalindmolina/dallas_esp32/control";
+  <script>
+    const TOPIC = "mi_planta/horno_01/temps"; // Debe coincidir con el ESP32
+    const client = mqtt.connect("wss://broker.emqx.io:8084/mqtt");
 
-    const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
-
-    client.on('connect', () => {
-        const badge = document.getElementById('connStatus');
-        badge.innerText = "Conectado al Broker";
-        badge.classList.add('connected');
-        client.subscribe(topicDatos);
+    client.on("connect", () => {
+      document.getElementById("conn").textContent = "Conectado en tiempo real";
+      client.subscribe(TOPIC);
     });
 
-    client.on('offline', () => {
-        const badge = document.getElementById('connStatus');
-        badge.innerText = "Desconectado";
-        badge.classList.remove('connected');
+    client.on("message", (topic, message) => {
+      const data = JSON.parse(message.toString());
+      document.getElementById("t1").textContent = data.t1.toFixed(1) + " °C";
+      document.getElementById("t2").textContent = data.t2.toFixed(1) + " °C";
+      document.getElementById("prom").textContent = data.prom.toFixed(1) + " °C";
+
+      const badge = document.getElementById("estado");
+      if (data.rango) {
+        badge.textContent = "PROMEDIO EN RANGO (Pulso enviado al PLC)";
+        badge.className = "badge ok";
+      } else {
+        badge.textContent = "PROMEDIO FUERA DE RANGO";
+        badge.className = "badge wait";
+      }
     });
-
-    client.on('message', (topic, message) => {
-        if (topic === topicDatos) {
-            const data = JSON.parse(message.toString());
-            
-            // Actualizar lecturas en la vista automática
-            document.getElementById('tempProm').innerText = data.prom.toFixed(1);
-            document.getElementById('temp1').innerText = data.t1 !== null ? data.t1.toFixed(1) : "Error";
-            document.getElementById('temp2').innerText = data.t2 !== null ? data.t2.toFixed(1) : "Error";
-            
-            // Actualizar indicadores de relé en AMBAS vistas (automática y manual)
-            const indicadores = document.querySelectorAll('.releIndicator');
-            const textos = document.querySelectorAll('.releTexto');
-            
-            indicadores.forEach(el => {
-                if (data.rele === 1) el.classList.add('on');
-                else el.classList.remove('on');
-            });
-
-            textos.forEach(txt => {
-                if (data.rele === 1) {
-                    txt.innerText = "ENCENDIDO";
-                    txt.style.color = "#00e676";
-                } else {
-                    txt.innerText = "APAGADO";
-                    txt.style.color = "#aaa";
-                }
-            });
-        }
-    });
-
-    // Navegación entre pantallas
-    function abrirVista(modo) {
-        document.getElementById('vistaInicio').classList.add('hidden');
-        
-        if (modo === 'auto') {
-            document.getElementById('vistaAuto').classList.remove('hidden');
-            document.getElementById('vistaManual').classList.add('hidden');
-        } else {
-            document.getElementById('vistaManual').classList.remove('hidden');
-            document.getElementById('vistaAuto').classList.add('hidden');
-        }
-        
-        // Notificar al ESP32 el cambio de modo inmediatamente
-        client.publish(topicControl, JSON.stringify({ modo: modo }));
-    }
-
-    function volverInicio() {
-        document.getElementById('vistaAuto').classList.add('hidden');
-        document.getElementById('vistaManual').classList.add('hidden');
-        document.getElementById('vistaInicio').classList.remove('hidden');
-    }
-
-    function enviarRango() {
-        const min = parseFloat(document.getElementById('tempMin').value);
-        const max = parseFloat(document.getElementById('tempMax').value);
-        client.publish(topicControl, JSON.stringify({ modo: 'auto', min: min, max: max }));
-        alert("Nuevo rango (" + min + "°C a " + max + "°C) enviado al ESP32");
-    }
-
-    function controlManual(encender) {
-        client.publish(topicControl, JSON.stringify({ modo: 'manual', releManual: encender }));
-    }
-</script>
-
+  </script>
 </body>
 </html>
